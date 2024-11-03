@@ -101,10 +101,10 @@ class UserService {
             },
         ])
 
-        return new SuccessResponse({
+        return {
             message: 'Gửi yêu cầu thành công',
             data: response,
-        })
+        }
     }
 
     static acceptFriend = async ({ userId, friendId }) => {

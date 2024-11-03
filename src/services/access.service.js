@@ -9,14 +9,9 @@ const {
     ConflictRequestError,
 } = require('../core/error.response')
 const { createTokenPair } = require('../auth/authUtils')
-const { SuccessResponse, CREATED } = require('../core/success.response')
 const { getInfoData } = require('../utils')
 const KeyTokenService = require('./keyToken.service')
-const { findUserByEmail } = require('../models/repositories/user.repo')
-const { getIoRedis } = require('../dbs/init.ioredis')
 const keytokenModel = require('../models/keytoken.model')
-
-const { instanceConnect: redisClient } = getIoRedis()
 
 class AccessService {
     static handleRefreshToken = async ({ user, keyStore, refreshToken }) => {
@@ -29,7 +24,7 @@ class AccessService {
 
         if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('User not register')
 
-        const foundUser = await findUserByEmail({ email })
+        const foundUser = await USER_MODEL.findOne({ email })
 
         if (!foundUser) throw new AuthFailureError('User not register')
 
@@ -54,13 +49,10 @@ class AccessService {
             }
         )
 
-        return new CREATED({
-            message: 'Success',
-            data: {
-                user,
-                tokens,
-            },
-        })
+        return {
+            user,
+            tokens,
+        }
     }
 
     static signUp = async ({ name, email, password }) => {
@@ -95,18 +87,15 @@ class AccessService {
                 throw new BadRequestError('Create keytoken error')
             }
 
-            return new CREATED({
-                message: 'Created new user',
-                data: {
-                    user: getInfoData(['_id', 'name', 'email'], newUser),
-                    tokens,
-                },
-            })
+            return {
+                user: getInfoData(['_id', 'name', 'email'], newShop),
+                tokens,
+            }
         }
     }
 
     static login = async ({ email, password }) => {
-        const foundUser = await findUserByEmail({ email })
+        const foundUser = await USER_MODEL.findOne({ email })
 
         if (!foundUser) {
             throw new NotFoundError('User not registered')
@@ -130,13 +119,10 @@ class AccessService {
             privateKey,
         })
 
-        return new SuccessResponse({
-            message: 'Login success',
-            data: {
-                user: getInfoData(['_id', 'name', 'email'], foundUser),
-                tokens,
-            },
-        })
+        return {
+            user: getInfoData(['_id', 'name', 'email'], foundUser),
+            tokens,
+        }
     }
 
     static logout = async (keyStore) => {

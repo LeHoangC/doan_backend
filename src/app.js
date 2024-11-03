@@ -5,6 +5,7 @@ const compression = require('compression')
 const { default: helmet } = require('helmet')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
+const cors = require('cors')
 
 const app = express()
 
@@ -17,9 +18,15 @@ app.use(
     })
 )
 
-app.use(cookieParser())
-
 // init middlewares
+
+app.use(
+    cors({
+        origin: 'http://localhost:5173',
+        credentials: true,
+    })
+)
+app.use(cookieParser())
 app.use(morgan('dev'))
 app.use(helmet())
 app.use(compression())
@@ -56,10 +63,10 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
     const statusCode = error.status || 500
     return res.status(statusCode).json({
-        status: 'error',
-        code: statusCode,
+        status: statusCode,
+        metadata: {},
         message: error.message || 'Internal Server Error',
-        stack: error.stack,
+        // stack: error.stack,
     })
 })
 

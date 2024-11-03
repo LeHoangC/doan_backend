@@ -25,10 +25,10 @@ class PostService {
             throw new BadRequestError('Create post error')
         }
 
-        return new CREATED({
+        return {
             message: 'Create post success',
             data: newPost,
-        })
+        }
     }
 
     static getUserPosts = async ({ currentId, userId }) => {
