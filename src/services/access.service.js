@@ -59,7 +59,7 @@ class AccessService {
         const holderUser = await USER_MODEL.findOne({ email }).lean()
 
         if (holderUser) {
-            throw new ConflictRequestError('Email already registered')
+            throw new ConflictRequestError('Email đã được đăng ký')
         }
 
         const passwordHash = await bcrypt.hash(password, 10)
@@ -88,7 +88,7 @@ class AccessService {
             }
 
             return {
-                user: getInfoData(['_id', 'name', 'email'], newShop),
+                user: getInfoData(['_id', 'name', 'email'], newUser),
                 tokens,
             }
         }
@@ -120,7 +120,7 @@ class AccessService {
         })
 
         return {
-            user: getInfoData(['_id', 'name', 'email'], foundUser),
+            user: getInfoData(['_id', 'name', 'email', 'picturePath'], foundUser),
             tokens,
         }
     }

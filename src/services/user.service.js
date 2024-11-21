@@ -6,7 +6,6 @@ const { Types } = require('mongoose')
 const { NotFoundError } = require('../core/error.response')
 const { findUserById } = require('../models/repositories/user.repo')
 const userModel = require('../models/user.model')
-const { SuccessResponse } = require('../core/success.response')
 
 class UserService {
     static getUser = async (userId) => {
@@ -76,12 +75,13 @@ class UserService {
 
         const users = await userModel
             .find({ _id: { $nin: [...user.requester, ...user.recipient, ...user.friends, userId] } })
-            .select({ name: 1, picturePath: 1, _id: 0 })
-            .limit(10)
+            .select({ name: 1, picturePath: 1 })
+            .limit(4)
         return users
     }
 
     static addFriend = async ({ userId, receiverId }) => {
+
         const foundFriend = await findUserById(receiverId)
 
         if (!foundFriend) throw new NotFoundError('User not found')
@@ -120,7 +120,7 @@ class UserService {
                     friends: new Types.ObjectId(friendId),
                 },
                 $pull: {
-                    recipient: new Types.ObjectId(friendId),
+                    requester: new Types.ObjectId(friendId),
                 },
             }
         )
@@ -134,7 +134,7 @@ class UserService {
                     friends: new Types.ObjectId(userId),
                 },
                 $pull: {
-                    requester: new Types.ObjectId(userId),
+                    recipient: new Types.ObjectId(userId),
                 },
             }
         )

@@ -81,7 +81,7 @@ class CommentService {
         return comment
     }
 
-    static getCommentByParentId = async ({ postId, parentCommentId, limit = 20, page = 1 }) => {
+    static getCommentByParentId = async ({ postId, parentCommentId, limit = 10, page = 1 }) => {
         var skip = (page - 1) * limit
 
         if (parentCommentId) {

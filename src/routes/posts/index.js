@@ -9,7 +9,7 @@ const router = express.Router()
 router.use(authentication)
 
 router.get('/user/:userId', asyncHandler(PostController.getUserPosts))
-router.get('/followingAndFriend', asyncHandler(PostController.getFollowingAndFriendPosts))
+router.get('/following-and-friend', asyncHandler(PostController.getFollowingAndFriendPosts))
 router.get('/search/:keySearch', asyncHandler(PostController.searchPost))
 
 router.post('/', uploadFile.single('picture'), asyncHandler(PostController.createPost))

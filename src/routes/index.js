@@ -12,3 +12,5 @@ router.use('/posts', require('./posts'))
 router.use('/auth', require('./access'))
 
 module.exports = router
+
+// v1/api/room/all

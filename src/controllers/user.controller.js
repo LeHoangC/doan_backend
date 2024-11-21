@@ -38,6 +38,9 @@ class UserController {
     }
 
     static acceptFriend = async (req, res, next) => {
+        console.log(req.body);
+
+
         const response = await UserService.acceptFriend({ userId: req.user.userId, friendId: req.body.friendId })
         new SuccessResponse({ metadata: response }).send(res)
     }

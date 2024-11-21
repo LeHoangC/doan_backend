@@ -22,11 +22,13 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
             accessToken,
             refreshToken,
         }
-    } catch (error) {}
+    } catch (error) { }
 }
 
 const authentication = asyncHandler(async (req, res, next) => {
     const userId = req.headers[HEADER.CLIENT_ID]
+
+
 
     if (!userId) {
         throw new AuthFailureError('Invalid Request')

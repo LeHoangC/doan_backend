@@ -1,11 +1,11 @@
-const { SuccessResponse } = require('../core/success.response')
+const { SuccessResponse, CREATED } = require('../core/success.response')
 const PostService = require('../services/post.service')
 
 class PostController {
     static createPost = async (req, res, next) => {
         const { file } = req
         const response = await PostService.createPost({ userId: req.user.userId, ...req.body, file })
-        new SuccessResponse({
+        new CREATED({
             message: response.message,
             metadata: response.data,
         }).send(res)

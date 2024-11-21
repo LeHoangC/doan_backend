@@ -24,7 +24,7 @@ class Database {
                 useNewUrlParser: true,
             })
             .then((_) => {
-                console.log('Connected success')
+                console.log('Connected mongodb success')
             })
             .catch((err) => console.log(`Error Connect Mongodb`, err))
     }

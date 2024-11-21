@@ -1,6 +1,7 @@
 const { BadRequestError, NotFoundError, ForbiddenError } = require('../core/error.response')
 const { CREATED } = require('../core/success.response')
 const postModel = require('../models/post.model')
+const commentModel = require('../models/comment.model')
 const { searchPostByUser } = require('../models/repositories/post.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require('../utils')
@@ -44,14 +45,16 @@ class PostService {
 
     static getFollowingAndFriendPosts = async ({ userId, limit = 20, skip = 0 }) => {
         const user = await findUserById(userId)
-        const listIdFollowing = [...user.following, ...user.friends, userId]
+        const listIdFollowing = [...user.following, user.recipient, ...user.friends, userId]
 
         const posts = await postModel
             .find({
                 post_userId: {
                     $in: listIdFollowing,
                 },
+                post_type: 'public'
             })
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
             .populate('post_userId', 'name picturePath')
@@ -81,6 +84,8 @@ class PostService {
             post_userId: userId,
             _id: convertToObjectIdMongodb(postId),
         })
+
+        await commentModel.deleteMany({ comment_postId: postId })
 
         if (deleted.acknowledged && deleted.deletedCount === 1) {
             return deleted
