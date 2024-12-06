@@ -3,7 +3,12 @@ const UserService = require('../services/user.service')
 
 class UserController {
     static getUser = async (req, res, next) => {
-        const response = await UserService.getUser(req.params.userId)
+        const response = await UserService.getUser(req.params.slug)
+        new SuccessResponse({ metadata: response }).send(res)
+    }
+
+    static updateUser = async (req, res, next) => {
+        const response = await UserService.updateUser({ userId: req.user.userId, bodyUpdate: req.body })
         new SuccessResponse({ metadata: response }).send(res)
     }
 
@@ -38,9 +43,6 @@ class UserController {
     }
 
     static acceptFriend = async (req, res, next) => {
-        console.log(req.body);
-
-
         const response = await UserService.acceptFriend({ userId: req.user.userId, friendId: req.body.friendId })
         new SuccessResponse({ metadata: response }).send(res)
     }

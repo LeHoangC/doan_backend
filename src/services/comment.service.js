@@ -91,6 +91,7 @@ class CommentService {
             const comments = await commentModel
                 .find({
                     comment_postId: convertToObjectIdMongodb(postId),
+                    comment_parentId: parentCommentId,
                     comment_left: { $gt: parent.comment_left },
                     comment_right: { $lte: parent.comment_right },
                 })

@@ -48,7 +48,7 @@ const userSchema = new Schema(
 
         location: {
             type: String,
-            default: '',
+            default: null,
         },
         status: {
             type: String,
@@ -57,7 +57,11 @@ const userSchema = new Schema(
         },
         gender: {
             type: String,
-            enum: ['Nam', 'Nữ', 'Khác', null],
+            enum: ['male', 'famale', 'other', null],
+            default: null,
+        },
+        education: {
+            type: String,
             default: null,
         },
         role: {

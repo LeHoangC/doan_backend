@@ -8,12 +8,20 @@ const { findUserById } = require('../models/repositories/user.repo')
 const userModel = require('../models/user.model')
 
 class UserService {
-    static getUser = async (userId) => {
-        const user = await findUserById(userId)
+    static getUser = async (slug) => {
+        const user = await userModel.findOne({ slug }).populate('friends', 'name picturePath slug')
         if (!user) {
             throw new NotFoundError('User not found')
         }
         return user
+    }
+
+    static updateUser = async ({ userId, bodyUpdate }) => {
+        console.log(userId);
+
+        console.log(bodyUpdate);
+
+        return await userModel.findByIdAndUpdate(userId, bodyUpdate, { new: true })
     }
 
     static getFriends = async (userId) => {
@@ -75,7 +83,7 @@ class UserService {
 
         const users = await userModel
             .find({ _id: { $nin: [...user.requester, ...user.recipient, ...user.friends, userId] } })
-            .select({ name: 1, picturePath: 1 })
+            .select({ name: 1, picturePath: 1, slug: 1 })
             .limit(4)
         return users
     }

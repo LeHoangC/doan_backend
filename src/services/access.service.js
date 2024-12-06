@@ -1,6 +1,7 @@
 const crypto = require('node:crypto')
 const bcrypt = require('bcrypt')
 const USER_MODEL = require('../models/user.model')
+const OTP_MODEL = require('../models/otp.model')
 const {
     BadRequestError,
     NotFoundError,
@@ -12,6 +13,9 @@ const { createTokenPair } = require('../auth/authUtils')
 const { getInfoData } = require('../utils')
 const KeyTokenService = require('./keyToken.service')
 const keytokenModel = require('../models/keytoken.model')
+const OtpService = require('./otp.service')
+const otpGenerator = require('otp-generator')
+
 
 class AccessService {
     static handleRefreshToken = async ({ user, keyStore, refreshToken }) => {
@@ -25,7 +29,6 @@ class AccessService {
         if (keyStore.refreshToken !== refreshToken) throw new AuthFailureError('User not register')
 
         const foundUser = await USER_MODEL.findOne({ email })
-
         if (!foundUser) throw new AuthFailureError('User not register')
 
         const tokens = await createTokenPair({ userId: foundUser._id, email }, keyStore.publicKey, keyStore.privateKey)
@@ -62,6 +65,13 @@ class AccessService {
             throw new ConflictRequestError('Email đã được đăng ký')
         }
 
+        // const otp = otpGenerator.generate(6, { digits: true, upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
+
+        // return {
+        //     message: 'oke',
+        //     otp: await OtpService.insertOtp({ email, otp })
+        // }
+
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = await USER_MODEL.create({
             name,
@@ -88,9 +98,28 @@ class AccessService {
             }
 
             return {
-                user: getInfoData(['_id', 'name', 'email'], newUser),
+                user: getInfoData(['_id', 'name', 'email', 'slug'], newUser),
                 tokens,
             }
+        }
+    }
+
+    static verifyEmail = async ({ email, otp }) => {
+        const otpHolder = await OTP_MODEL.find({ email })
+
+        if (!otpHolder.length) {
+            throw new NotFoundError('Otp đã hết hạn.')
+        }
+
+        const lastOtp = otpHolder[otpHolder.length - 1]
+        const validOtp = OtpService.validOtp({ otp, hashOtp: lastOtp.otp })
+
+        if (!validOtp) {
+            throw new BadRequestError('Xác thực otp thất bại.')
+        }
+
+        if (valid && email === lastOtp.email) {
+            // tạo người dùng
         }
     }
 
@@ -98,7 +127,7 @@ class AccessService {
         const foundUser = await USER_MODEL.findOne({ email })
 
         if (!foundUser) {
-            throw new NotFoundError('User not registered')
+            throw new NotFoundError('Tài khoản không tồn tại')
         }
 
         const match = await bcrypt.compare(password, foundUser.password)
@@ -120,7 +149,7 @@ class AccessService {
         })
 
         return {
-            user: getInfoData(['_id', 'name', 'email', 'picturePath'], foundUser),
+            user: getInfoData(['_id', 'name', 'email', 'picturePath', 'slug'], foundUser),
             tokens,
         }
     }

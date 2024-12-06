@@ -12,7 +12,7 @@ class PostController {
     }
 
     static getUserPosts = async (req, res, next) => {
-        const response = await PostService.getUserPosts({ currentId: req.user.userId, userId: req.params.userId })
+        const response = await PostService.getUserPosts({ currentId: req.user.userId, userSlug: req.params.userSlug })
         new SuccessResponse({
             metadata: response,
         }).send(res)

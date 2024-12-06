@@ -6,6 +6,7 @@ const { searchPostByUser } = require('../models/repositories/post.repo')
 const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require('../utils')
 const uploadMediaService = require('./upload.service')
+const userModel = require('../models/user.model')
 
 class PostService {
     static createPost = async ({ userId, content, type, location, file }) => {
@@ -32,14 +33,17 @@ class PostService {
         }
     }
 
-    static getUserPosts = async ({ currentId, userId }) => {
-        const filter = { post_userId: userId }
+    static getUserPosts = async ({ currentId, userSlug }) => {
 
-        if (currentId !== userId) {
+        const foundUser = await userModel.findOne({ slug: userSlug })
+
+        const filter = { post_userId: foundUser._id }
+
+        if (currentId !== foundUser._id.toString()) {
             filter['post_type'] = 'public'
         }
 
-        const posts = await postModel.find(filter).populate({ path: 'post_userId', select: 'name picturePath' })
+        const posts = await postModel.find(filter).sort({ createdAt: -1 }).populate({ path: 'post_userId', select: 'name picturePath' })
         return posts
     }
 
@@ -57,7 +61,7 @@ class PostService {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .populate('post_userId', 'name picturePath')
+            .populate('post_userId', 'name picturePath slug')
 
         return posts
     }

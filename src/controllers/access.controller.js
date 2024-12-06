@@ -44,6 +44,8 @@ class AccessController {
     signUp = async (req, res, next) => {
         const response = await AccessService.signUp(req.body)
 
+        console.log(response);
+
         new CREATED({
             metadata: response
         }).send(res)
