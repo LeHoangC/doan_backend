@@ -42,6 +42,13 @@ class PostController {
         }).send(res)
     }
 
+    static getAllPosts = async (req, res, next) => {
+        const response = await PostService.getAllPost()
+        new SuccessResponse({
+            metadata: response,
+        }).send(res)
+    }
+
     static deletePost = async (req, res, next) => {
         const response = await PostService.deletePost({ userId: req.user.userId, postId: req.params.id })
         new SuccessResponse({

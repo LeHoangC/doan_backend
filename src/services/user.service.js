@@ -16,12 +16,20 @@ class UserService {
         return user
     }
 
+    static getAllUser = async () => {
+        return await userModel.find()
+    }
+
     static updateUser = async ({ userId, bodyUpdate }) => {
-        console.log(userId);
-
-        console.log(bodyUpdate);
-
         return await userModel.findByIdAndUpdate(userId, bodyUpdate, { new: true })
+    }
+
+    static approveUser = async ({ id }) => {
+        return await userModel.findByIdAndUpdate(id, { status: 'active' })
+    }
+
+    static unApproveUser = async ({ id }) => {
+        return await userModel.findByIdAndUpdate(id, { status: 'inactive' })
     }
 
     static getFriends = async (userId) => {
@@ -33,7 +41,7 @@ class UserService {
                 },
             })
             .populate('friends', 'name picturePath')
-            .select('name picturePath')
+            .select('name picturePath slug')
 
         return listFriends
     }
@@ -47,7 +55,7 @@ class UserService {
                 },
                 status: 'active',
             })
-            .select('name picturePath')
+            .select('name picturePath slug')
 
         return listFollowing
     }
@@ -60,7 +68,7 @@ class UserService {
                     $in: user.requester,
                 },
             })
-            .select('name picturePath')
+            .select('name picturePath slug')
 
         return listRequester
     }
@@ -73,7 +81,7 @@ class UserService {
                     $in: user.recipient,
                 },
             })
-            .select('name picturePath')
+            .select('name picturePath slug')
 
         return listRecipient
     }
@@ -194,7 +202,7 @@ class UserService {
             }
         )
 
-        return uploadAvatar
+        return picturePath
     }
 }
 

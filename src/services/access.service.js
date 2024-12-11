@@ -130,6 +130,10 @@ class AccessService {
             throw new NotFoundError('Tài khoản không tồn tại')
         }
 
+        if (foundUser.status !== 'active') {
+            throw new NotFoundError('Tài khoản không có quyền truy cập.')
+        }
+
         const match = await bcrypt.compare(password, foundUser.password)
         if (!match) {
             throw new AuthFailureError('Thông tin tài khoản hoặc mật khẩu không chính xác')

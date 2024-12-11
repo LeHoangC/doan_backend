@@ -37,7 +37,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     const keyStore = await findByUserId(userId)
 
     if (!keyStore) {
-        throw new NotFoundError('Not Found KeyStore')
+        throw new AuthFailureError('Not Found KeyStore')
     }
 
     if (req.headers[HEADER.REFRESHTOKEN]) {

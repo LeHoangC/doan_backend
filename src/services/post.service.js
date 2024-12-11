@@ -49,7 +49,7 @@ class PostService {
 
     static getFollowingAndFriendPosts = async ({ userId, limit = 20, skip = 0 }) => {
         const user = await findUserById(userId)
-        const listIdFollowing = [...user.following, user.recipient, ...user.friends, userId]
+        const listIdFollowing = [...user.following, ...user.recipient, ...user.friends, userId]
 
         const posts = await postModel
             .find({
@@ -100,6 +100,10 @@ class PostService {
 
     static searchPost = async ({ keySearch }) => {
         return await searchPostByUser({ keySearch })
+    }
+
+    static getAllPost = async () => {
+        return await postModel.find().sort({ createdAt: -1 }).populate('post_userId', 'name picturePath slug')
     }
 }
 

@@ -5,6 +5,7 @@ const { uploadFile } = require('../../middleware')
 const PostController = require('../../controllers/post.controller')
 
 const router = express.Router()
+router.get('/', asyncHandler(PostController.getAllPosts))
 
 router.use(authentication)
 

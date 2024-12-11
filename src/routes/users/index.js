@@ -6,6 +6,9 @@ const UserController = require('../../controllers/user.controller')
 
 const router = express.Router()
 
+router.get('/', asyncHandler(UserController.getAllUser))
+router.post('/approve/:id', asyncHandler(UserController.approveUser))
+router.post('/un-approve/:id', asyncHandler(UserController.unApproveUser))
 router.use(authentication)
 
 router.get('/:slug', asyncHandler(UserController.getUser))

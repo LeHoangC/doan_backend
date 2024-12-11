@@ -7,6 +7,11 @@ class UserController {
         new SuccessResponse({ metadata: response }).send(res)
     }
 
+    static getAllUser = async (req, res, next) => {
+        const response = await UserService.getAllUser()
+        new SuccessResponse({ metadata: response }).send(res)
+    }
+
     static updateUser = async (req, res, next) => {
         const response = await UserService.updateUser({ userId: req.user.userId, bodyUpdate: req.body })
         new SuccessResponse({ metadata: response }).send(res)
@@ -49,6 +54,16 @@ class UserController {
 
     static removeFriend = async (req, res, next) => {
         const response = await UserService.removeFriend({ userId: req.user.userId, friendId: req.body.friendId })
+        new SuccessResponse({ metadata: response }).send(res)
+    }
+
+    static approveUser = async (req, res, next) => {
+        const response = await UserService.approveUser({ id: req.params.id })
+        new SuccessResponse({ metadata: response }).send(res)
+    }
+
+    static unApproveUser = async (req, res, next) => {
+        const response = await UserService.unApproveUser({ id: req.params.id })
         new SuccessResponse({ metadata: response }).send(res)
     }
 
