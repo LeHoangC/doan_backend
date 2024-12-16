@@ -15,10 +15,22 @@ class MessageService {
         }
     }
 
+    static recallMessage = async ({ msgId }) => {
+        return await messageModel.findByIdAndUpdate(msgId, {
+            isRecall: true
+        }, { new: true })
+    }
+
+    static delMessage = async ({ msgId }) => {
+        console.log({ msgId });
+
+        return await messageModel.findByIdAndDelete(msgId)
+    }
+
     static getMessages = async ({ conversationId }) => {
         const messages = await messageModel.find({
             conversationId,
-        })
+        }).sort({ createdAt: 1 })
 
         return {
             message: 'Get messages',

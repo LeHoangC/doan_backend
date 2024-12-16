@@ -6,6 +6,7 @@ const PostController = require('../../controllers/post.controller')
 
 const router = express.Router()
 router.get('/', asyncHandler(PostController.getAllPosts))
+router.get('/gen-caption', asyncHandler(PostController.genCaptionWithAi))
 
 router.use(authentication)
 

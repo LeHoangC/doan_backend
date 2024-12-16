@@ -16,6 +16,10 @@ const conversationSchema = new Schema(
         text: {
             type: String,
         },
+        isRecall: {
+            type: Boolean,
+            default: false
+        }
     },
     {
         timestamps: true,

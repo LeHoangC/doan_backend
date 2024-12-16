@@ -2,6 +2,21 @@ const { SuccessResponse, CREATED } = require('../core/success.response')
 const PostService = require('../services/post.service')
 
 class PostController {
+    static genCaptionWithAi = async (req, res, next) => {
+        const { prompt = 'Hello', imageUrl } = req.query;
+
+        const streamResult = await PostService.genCaptionWithAi({ prompt, imageUrl });
+        res.setHeader('Content-Type', 'text/plain');
+        res.setHeader('Transfer-Encoding', 'chunked');
+        for await (const chunk of streamResult.stream) {
+            const chunkText = await chunk.text();
+            console.log(chunkText);
+
+            res.write(chunkText);
+        }
+        res.end();
+    }
+
     static createPost = async (req, res, next) => {
         const { file } = req
         const response = await PostService.createPost({ userId: req.user.userId, ...req.body, file })

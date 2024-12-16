@@ -7,8 +7,15 @@ const { findUserById } = require('../models/repositories/user.repo')
 const { convertToObjectIdMongodb } = require('../utils')
 const uploadMediaService = require('./upload.service')
 const userModel = require('../models/user.model')
+const modelAi = require('../configs/gemini.config')
 
 class PostService {
+
+    static genCaptionWithAi = async ({ prompt = 'Hello', imageUrl }) => {
+        const result = await modelAi.generateContentStream(prompt);
+        return result;
+    }
+
     static createPost = async ({ userId, content, type, location, file }) => {
         let urlImage
         if (file) {

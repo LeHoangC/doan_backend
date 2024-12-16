@@ -6,6 +6,7 @@ const { Types } = require('mongoose')
 const { NotFoundError } = require('../core/error.response')
 const { findUserById } = require('../models/repositories/user.repo')
 const userModel = require('../models/user.model')
+const { getIoRedis } = require('../dbs/init.ioredis')
 
 class UserService {
     static getUser = async (slug) => {
@@ -87,13 +88,40 @@ class UserService {
     }
 
     static getAllUserNotFriend = async (userId) => {
-        const user = await findUserById(userId)
+        const foundUser = await findUserById(userId)
+
+        const addCommonFriendsCount = async (users) => {
+            const result = await Promise.all(users.map(async user => {
+                if (foundUser.friends.length) {
+                    await getIoRedis().instanceConnect.sadd('currentUser', foundUser.friends)
+                }
+
+                if (user.friends && user.friends.length > 0) {
+                    await getIoRedis().instanceConnect.sadd(`user_${user._id}_friends`, user.friends);
+                }
+
+                const commonFriends = await getIoRedis().instanceConnect.sinter('currentUser', `user_${user._id}_friends`);
+                await getIoRedis().instanceConnect.del(`user_${user._id}_friends`);
+                await getIoRedis().instanceConnect.del('currentUser');
+
+                delete user.friends
+                return {
+                    ...user,
+                    commonFriendsCount: commonFriends.length
+                };
+            }))
+
+            return result.sort((a, b) => b.commonFriendsCount - a.commonFriendsCount);
+        }
 
         const users = await userModel
-            .find({ _id: { $nin: [...user.requester, ...user.recipient, ...user.friends, userId] } })
-            .select({ name: 1, picturePath: 1, slug: 1 })
-            .limit(4)
-        return users
+            .find({ _id: { $nin: [...foundUser.requester, ...foundUser.recipient, ...foundUser.friends, userId] } })
+            .select({ name: 1, picturePath: 1, slug: 1, friends: 1 })
+            .limit(4).lean()
+
+        const usersWithCommonFriends = await addCommonFriendsCount(users);
+
+        return usersWithCommonFriends
     }
 
     static addFriend = async ({ userId, receiverId }) => {

@@ -42,6 +42,34 @@ io.on('connection', (socket) => {
         removeUser(socket.id)
         socket.emit('getUsers', users)
     })
+
+    socket.on("send_signal", (data) => {
+        socket.join(data.room);
+        console.log(`User ${socket.id} joined room ${data.room}`);
+        socket.to(data.room).emit("receive_signal", {
+            signal: data.signal,
+            from: socket.id,
+        });
+    });
+
+    socket.on("call_user", ({ from, to, roomId }) => {
+        const targetSocketId = getUser(to);
+
+        if (targetSocketId) {
+            io.to(targetSocketId.socketId).emit("incoming_call", { from, roomId });
+        } else {
+            io.to(socket.id).emit("call_error", { message: "User not found." });
+        }
+    });
+
+    socket.on("reject", ({ to }) => {
+        if (to) {
+            const targetSocketId = users[to];
+            if (targetSocketId) {
+                io.to(targetSocketId).emit("reject");
+            }
+        }
+    });
 })
 
 module.exports = { server, io }

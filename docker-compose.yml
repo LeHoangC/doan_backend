@@ -13,7 +13,7 @@ services:
         volumes:
             - backend_doan_mongo-db:/data/db
     redis:
-        image: redis
+        image: redis:alpine
         ports:
             - '6379:6379'
         volumes:

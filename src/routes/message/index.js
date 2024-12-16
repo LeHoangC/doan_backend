@@ -9,5 +9,7 @@ router.use(authentication)
 
 router.get('/:conversationId', asyncHandler(messageController.getMessages))
 router.post('/', asyncHandler(messageController.createMessage))
+router.post('/:msgId', asyncHandler(messageController.recallMessage))
+router.delete('/:msgId', asyncHandler(messageController.delMessage))
 
 module.exports = router

@@ -57,7 +57,7 @@ const userSchema = new Schema(
         },
         gender: {
             type: String,
-            enum: ['male', 'famale', 'other', null],
+            enum: ['male', 'female', 'other', null],
             default: null,
         },
         education: {

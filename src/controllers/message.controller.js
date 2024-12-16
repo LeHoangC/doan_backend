@@ -18,6 +18,18 @@ class MessageController {
             metadata: response.data,
         }).send(res)
     }
+
+    static recallMessage = async (req, res, next) => {
+        new SuccessResponse({
+            metadata: await MessageService.recallMessage({ msgId: req.params.msgId }),
+        }).send(res)
+    }
+
+    static delMessage = async (req, res, next) => {
+        new SuccessResponse({
+            metadata: await MessageService.delMessage({ msgId: req.params.msgId }),
+        }).send(res)
+    }
 }
 
 module.exports = MessageController
