@@ -68,7 +68,8 @@ class UserController {
     }
 
     static uploadAvatar = async (req, res, next) => {
-        const response = await UserService.uploadAvatar({ userId: req.user.userId, picturePath: req.file.filename })
+        const { file } = req
+        const response = await UserService.uploadAvatar({ userId: req.user.userId, file })
         new SuccessResponse({ metadata: response }).send(res)
     }
 }

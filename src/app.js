@@ -6,8 +6,6 @@ const { default: helmet } = require('helmet')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
-const { rateLimit } = require('express-rate-limit')
-const { RedisStore } = require('rate-limit-redis')
 
 const app = express()
 
@@ -24,7 +22,7 @@ app.use(
 
 app.use(
     cors({
-        origin: ['http://localhost:3000', 'http://localhost:3002'],
+        origin: ['http://localhost:3000', 'http://localhost:3002', 'https://doan-frontend-brown.vercel.app'],
         credentials: true,
     })
 )
@@ -38,14 +36,6 @@ const redis = require('./dbs/init.ioredis')
 redis.init({
     REDIS_HOST: 'redis',
 })
-
-// init db
-// redis.init({
-//     REDIS_HOST: 'central-reptile-63263.upstash.io',
-//     REDIS_USERNAME: 'default',
-//     REDIS_PASSWORD: 'AfcfAAIjcDEzY2NlZjhmMDJhMDU0N2Q3OWU3NzZiMDI5N2E2YjMyM3AxMA',
-// })
-
 
 require('./dbs/init.mongodb')
 

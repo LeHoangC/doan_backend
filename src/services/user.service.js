@@ -7,6 +7,7 @@ const { NotFoundError } = require('../core/error.response')
 const { findUserById } = require('../models/repositories/user.repo')
 const userModel = require('../models/user.model')
 const { getIoRedis } = require('../dbs/init.ioredis')
+const uploadMediaService = require('./upload.service')
 
 class UserService {
     static getUser = async (slug) => {
@@ -214,23 +215,28 @@ class UserService {
         return 1
     }
 
-    static uploadAvatar = async ({ userId, picturePath }) => {
+    static uploadAvatar = async ({ userId, file }) => {
         const foundUser = await findUserById(userId)
 
-        if (foundUser.picturePath) {
-            await unlinkAsync(`public/assets/${foundUser.picturePath}`)
+        let urlImage
+        if (file) {
+            urlImage = await uploadMediaService.uploadImageFromLocal({ path: file.path, folderName: `post/${userId}` })
         }
+
+        // if (foundUser.picturePath) {
+        //     await unlinkAsync(`public/assets/${foundUser.picturePath}`)
+        // }
 
         const uploadAvatar = await userModel.updateOne(
             {
                 _id: userId,
             },
             {
-                picturePath,
+                picturePath: urlImage,
             }
         )
 
-        return picturePath
+        return uploadAvatar
     }
 }
 
