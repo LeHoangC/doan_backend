@@ -236,7 +236,7 @@ class UserService {
             }
         )
 
-        return uploadAvatar
+        return urlImage
     }
 }
 
